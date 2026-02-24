@@ -1,11 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Music data</title>
     <script type="module" src="script.mjs"></script>
 </head>
 
 <body>
+    <main>
+        <section aria-labelledby="user-section-title">
+            <h2 id="user-section-title">Select a user</h2>
+
+            <label for="userSelect">User</label>
+            <select id="userSelect" name="user">
+                <option value="">Choose a user</option>
+            </select>
+        </section>
+
+        <section aria-live="polite" id="status"></section>
+
+        <section aria-labelledby="results-title" id="results">
+            <h2 id="results-title">Results</h2>
+        </section>
+    </main>
 </body>
 
 </html>

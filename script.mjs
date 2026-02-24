@@ -7,5 +7,6 @@
 import { countUsers } from "./common.mjs";
 
 window.onload = function () {
-  document.querySelector("body").innerText = `There are ${countUsers()} users`;
+  const statusEl = this.document.querySelector("#status");
+  statusEl.textContent = `There are ${countUsers()} users`;
 };

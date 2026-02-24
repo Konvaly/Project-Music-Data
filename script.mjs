@@ -6,6 +6,10 @@
 
 import { countUsers } from "./common.mjs";
 import { getUserIDs } from "./data.mjs";
+import {
+  getMostListenedArtistByCount,
+  getMostListenedSongByCount,
+} from "./analytics.mjs";
 
 window.onload = function () {
   const statusEl = document.querySelector("#status");
@@ -24,7 +28,20 @@ window.onload = function () {
     const statusEl = document.querySelector("#status");
 
     resultsEl.innerHTML = "";
+    const userId = userSelectEl.value;
+    if (userId === "") {
+      statusEl.textContent = "Choose a user";
+      return;
+    }
+
     statusEl.textContent = `Selected User ${userSelectEl.value}`;
+
+    const mostListenedSong = getMostListenedSongByCount(userId);
+    if (mostListenedSong !== null) {
+      const pEl = document.createElement("p");
+      pEl.textContent = `${mostListenedSong.label}: ${mostListenedSong.value}`;
+      resultsEl.appendChild(pEl);
+    }
   });
 
   statusEl.textContent = `There are ${countUsers()} users`;

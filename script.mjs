@@ -19,5 +19,13 @@ window.onload = function () {
     userSelectEl.appendChild(optionEl);
   }
 
+  userSelectEl.addEventListener("change", function () {
+    const resultsEl = document.querySelector("#results");
+    const statusEl = document.querySelector("#status");
+
+    resultsEl.innerHTML = "";
+    statusEl.textContent = `Selected User ${userSelectEl.value}`;
+  });
+
   statusEl.textContent = `There are ${countUsers()} users`;
 };

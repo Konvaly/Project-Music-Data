@@ -1,5 +1,10 @@
 import { getSong, getListenEvents } from "./data.mjs";
-import { countByKey, sumByKey, maxKeyByNumber } from "./utils.mjs";
+import {
+  countByKey,
+  sumByKey,
+  maxKeyByNumber,
+  isFridayNight,
+} from "./utils.mjs";
 
 export function getMostListenedSongByCount(userId) {
   const events = getListenEvents(userId);
@@ -91,7 +96,25 @@ export function getMostListenedArtistByTime(userId) {
 }
 
 export function getFridayNightSongByCount(userId) {
-  return null;
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const fridayNightEvents = events.filter((event) =>
+    isFridayNight(event.timestamp),
+  );
+
+  if (fridayNightEvents.length === 0) return null;
+
+  const counts = countByKey(fridayNightEvents, (event) => event.song_id);
+  const topSongId = maxKeyByNumber(counts);
+
+  const song = getSong(topSongId);
+
+  return {
+    label: "Friday night song (count)",
+    value: `${song.artist} - ${song.title}`,
+  };
 }
 
 export function getFridayNightSongByTime(userId) {

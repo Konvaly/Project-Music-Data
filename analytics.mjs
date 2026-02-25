@@ -232,5 +232,36 @@ export function getEveryDaySongs(userId) {
 }
 
 export function getTopGenres(userId) {
-  return null;
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  const countsByGenre = countByKey(
+    events,
+    (event) => getSong(event.song_id).genre,
+  );
+
+  const topGenres = Object.entries(countsByGenre)
+    .sort((a, b) => {
+      const countDiff = b[1] - a[1];
+      if (countDiff !== 0) return countDiff;
+      return a[0].localeCompare(b[0]);
+    })
+    .slice(0, 3)
+    .map(([genre]) => genre);
+
+  const n = topGenres.length;
+  if (n === 0) return null;
+
+  let label;
+
+  if (n === 1) {
+    label = "Top genre";
+  } else {
+    label = `Top ${n} genres`;
+  }
+
+  return {
+    label,
+    value: topGenres.join(", "),
+  };
 }

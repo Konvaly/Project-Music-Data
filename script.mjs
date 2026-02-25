@@ -6,10 +6,22 @@
 
 import { countUsers } from "./common.mjs";
 import { getUserIDs } from "./data.mjs";
-import {
-  getMostListenedArtistByCount,
-  getMostListenedSongByCount,
-} from "./analytics.mjs";
+import { getMostListenedSongByCount } from "./analytics.mjs";
+
+function renderAnswerSection(resultsEl, label, value) {
+  const sectionEl = document.createElement("section");
+
+  const headingEl = document.createElement("h3");
+  headingEl.textContent = label;
+
+  const valueEl = document.createElement("p");
+  valueEl.textContent = value;
+
+  sectionEl.appendChild(headingEl);
+  sectionEl.appendChild(valueEl);
+
+  resultsEl.appendChild(sectionEl);
+}
 
 window.onload = function () {
   const statusEl = document.querySelector("#status");
@@ -38,9 +50,11 @@ window.onload = function () {
 
     const mostListenedSong = getMostListenedSongByCount(userId);
     if (mostListenedSong !== null) {
-      const pEl = document.createElement("p");
-      pEl.textContent = `${mostListenedSong.label}: ${mostListenedSong.value}`;
-      resultsEl.appendChild(pEl);
+      renderAnswerSection(
+        resultsEl,
+        mostListenedSong.label,
+        mostListenedSong.value,
+      );
     }
   });
 

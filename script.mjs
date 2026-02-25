@@ -6,7 +6,10 @@
 
 import { countUsers } from "./common.mjs";
 import { getUserIDs } from "./data.mjs";
-import { getMostListenedSongByCount } from "./analytics.mjs";
+import {
+  getMostListenedSongByCount,
+  getMostListenedSongByTime,
+} from "./analytics.mjs";
 
 function renderAnswerSection(resultsEl, label, value) {
   const sectionEl = document.createElement("section");
@@ -54,6 +57,15 @@ window.onload = function () {
         resultsEl,
         mostListenedSong.label,
         mostListenedSong.value,
+      );
+    }
+
+    const mostListenedSongByTime = getMostListenedSongByTime(userId);
+    if (mostListenedSongByTime !== null) {
+      renderAnswerSection(
+        resultsEl,
+        mostListenedSongByTime.label,
+        mostListenedSongByTime.value,
       );
     }
   });

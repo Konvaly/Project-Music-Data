@@ -73,7 +73,21 @@ export function getMostListenedArtistByCount(userId) {
 }
 
 export function getMostListenedArtistByTime(userId) {
-  return null;
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  const totalByArtist = sumByKey(
+    events,
+    (event) => getSong(event.song_id).artist,
+    (event) => getSong(event.song_id).duration_seconds,
+  );
+
+  const topArtist = maxKeyByNumber(totalByArtist);
+
+  return {
+    label: "Most listened artist (time)",
+    value: topArtist,
+  };
 }
 
 export function getFridayNightSongByCount(userId) {

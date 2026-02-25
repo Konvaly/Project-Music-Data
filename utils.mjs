@@ -29,3 +29,24 @@ export function sumByKey(items, getKey, getValue) {
 
   return totals;
 }
+
+export function maxKeyByNumber(map) {
+  let bestKey = null;
+  let bestValue = -Infinity;
+
+  for (const key in map) {
+    const value = map[key];
+
+    if (value > bestValue) {
+      bestValue = value;
+      bestKey = key;
+      continue;
+    }
+
+    if (value === bestValue && bestKey !== null && key < bestKey) {
+      bestKey = key;
+    }
+  }
+
+  return bestKey;
+}

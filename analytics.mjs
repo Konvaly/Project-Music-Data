@@ -1,5 +1,5 @@
 import { getSong, getListenEvents } from "./data.mjs";
-import { countByKey, sumByKey } from "./utils.mjs";
+import { countByKey, sumByKey, maxKeyByNumber } from "./utils.mjs";
 
 export function getMostListenedSongByCount(userId) {
   const events = getListenEvents(userId);
@@ -56,7 +56,20 @@ export function getMostListenedSongByTime(userId) {
 }
 
 export function getMostListenedArtistByCount(userId) {
-  return null;
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  const countsByArtist = countByKey(events, (event) => {
+    const song = getSong(event.song_id);
+    return song.artist;
+  });
+
+  const topArtist = maxKeyByNumber(countsByArtist);
+
+  return {
+    label: "Most listened artist (count)",
+    value: topArtist,
+  };
 }
 
 export function getMostListenedArtistByTime(userId) {

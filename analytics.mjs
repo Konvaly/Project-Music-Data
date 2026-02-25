@@ -4,6 +4,7 @@ import {
   sumByKey,
   maxKeyByNumber,
   isFridayNight,
+  getLocalDateKey,
 } from "./utils.mjs";
 
 export function getMostListenedSongByCount(userId) {
@@ -178,7 +179,54 @@ export function getLongestStreak(userId) {
 }
 
 export function getEveryDaySongs(userId) {
-  return null;
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const activeDays = new Set();
+  const daysBySongId = {};
+
+  for (const event of events) {
+    const dayKey = getLocalDateKey(event.timestamp);
+    const songId = event.song_id;
+
+    activeDays.add(dayKey);
+
+    if (!daysBySongId[songId]) {
+      daysBySongId[songId] = new Set();
+    }
+
+    daysBySongId[songId].add(dayKey);
+  }
+
+  const everyDaySongNames = [];
+
+  for (const songId in daysBySongId) {
+    const songDays = daysBySongId[songId];
+    if (songDays.size !== activeDays.size) continue;
+
+    let listenedEveryDay = true;
+    for (const dayKey of activeDays) {
+      if (!songDays.has(dayKey)) {
+        listenedEveryDay = false;
+        break;
+      }
+    }
+
+    if (listenedEveryDay) {
+      const song = getSong(songId);
+      everyDaySongNames.push(`${song.artist} - ${song.title}`);
+    }
+  }
+
+  if (everyDaySongNames.length === 0) return null;
+
+  everyDaySongNames.sort();
+
+  return {
+    label: "Every day songs",
+    value: everyDaySongNames.join(", "),
+  };
 }
 
 export function getTopGenres(userId) {

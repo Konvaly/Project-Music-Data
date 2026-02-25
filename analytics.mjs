@@ -1,0 +1,267 @@
+import { getSong, getListenEvents } from "./data.mjs";
+import {
+  countByKey,
+  sumByKey,
+  maxKeyByNumber,
+  isFridayNight,
+  getLocalDateKey,
+} from "./utils.mjs";
+
+export function getMostListenedSongByCount(userId) {
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const counts = countByKey(events, (event) => event.song_id);
+
+  let maxSongId = null;
+  let maxCount = 0;
+
+  for (const songId in counts) {
+    if (counts[songId] > maxCount) {
+      maxCount = counts[songId];
+      maxSongId = songId;
+    }
+  }
+
+  const song = getSong(maxSongId);
+
+  return {
+    label: "Most listened song (count)",
+    value: `${song.artist} - ${song.title}`,
+  };
+}
+
+export function getMostListenedSongByTime(userId) {
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const totalBySong = sumByKey(
+    events,
+    (event) => event.song_id,
+    (event) => getSong(event.song_id).duration_seconds,
+  );
+
+  let maxSongId = null;
+  let maxSeconds = 0;
+
+  for (const songId in totalBySong) {
+    if (totalBySong[songId] > maxSeconds) {
+      maxSeconds = totalBySong[songId];
+      maxSongId = songId;
+    }
+  }
+
+  const song = getSong(maxSongId);
+
+  return {
+    label: "Most listened song (time)",
+    value: `${song.artist} - ${song.title}`,
+  };
+}
+
+export function getMostListenedArtistByCount(userId) {
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  const countsByArtist = countByKey(events, (event) => {
+    const song = getSong(event.song_id);
+    return song.artist;
+  });
+
+  const topArtist = maxKeyByNumber(countsByArtist);
+
+  return {
+    label: "Most listened artist (count)",
+    value: topArtist,
+  };
+}
+
+export function getMostListenedArtistByTime(userId) {
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  const totalByArtist = sumByKey(
+    events,
+    (event) => getSong(event.song_id).artist,
+    (event) => getSong(event.song_id).duration_seconds,
+  );
+
+  const topArtist = maxKeyByNumber(totalByArtist);
+
+  return {
+    label: "Most listened artist (time)",
+    value: topArtist,
+  };
+}
+
+export function getFridayNightSongByCount(userId) {
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const fridayNightEvents = events.filter((event) =>
+    isFridayNight(event.timestamp),
+  );
+
+  if (fridayNightEvents.length === 0) return null;
+
+  const counts = countByKey(fridayNightEvents, (event) => event.song_id);
+  const topSongId = maxKeyByNumber(counts);
+
+  const song = getSong(topSongId);
+
+  return {
+    label: "Friday night song (count)",
+    value: `${song.artist} - ${song.title}`,
+  };
+}
+
+export function getFridayNightSongByTime(userId) {
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const fridayNightEvents = events.filter((event) =>
+    isFridayNight(event.timestamp),
+  );
+
+  if (fridayNightEvents.length === 0) return null;
+
+  const totalsBySong = sumByKey(
+    fridayNightEvents,
+    (event) => event.song_id,
+    (event) => getSong(event.song_id).duration_seconds,
+  );
+
+  const topSongId = maxKeyByNumber(totalsBySong);
+  const song = getSong(topSongId);
+
+  return {
+    label: "Friday night song (time)",
+    value: `${song.artist} - ${song.title}`,
+  };
+}
+
+export function getLongestStreak(userId) {
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  let currentSongId = events[0].song_id;
+  let currentStreak = 1;
+
+  let bestSongId = currentSongId;
+  let bestStreak = 1;
+
+  for (let i = 1; i < events.length; i++) {
+    const songId = events[i].song_id;
+
+    if (songId === currentSongId) {
+      currentStreak++;
+    } else {
+      currentSongId = songId;
+      currentStreak = 1;
+    }
+
+    if (currentStreak > bestStreak) {
+      bestStreak = currentStreak;
+      bestSongId = currentSongId;
+    } else if (currentStreak === bestStreak && currentSongId < bestSongId) {
+      bestSongId = currentSongId;
+    }
+  }
+
+  const song = getSong(bestSongId);
+
+  return {
+    label: "Longest streak song",
+    value: `${song.artist} - ${song.title} (length: ${bestStreak})`,
+  };
+}
+
+export function getEveryDaySongs(userId) {
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const activeDays = new Set();
+  const daysBySongId = {};
+
+  for (const event of events) {
+    const dayKey = getLocalDateKey(event.timestamp);
+    const songId = event.song_id;
+
+    activeDays.add(dayKey);
+
+    if (!daysBySongId[songId]) {
+      daysBySongId[songId] = new Set();
+    }
+
+    daysBySongId[songId].add(dayKey);
+  }
+
+  const everyDaySongNames = [];
+
+  for (const songId in daysBySongId) {
+    const songDays = daysBySongId[songId];
+    if (songDays.size !== activeDays.size) continue;
+
+    let listenedEveryDay = true;
+    for (const dayKey of activeDays) {
+      if (!songDays.has(dayKey)) {
+        listenedEveryDay = false;
+        break;
+      }
+    }
+
+    if (listenedEveryDay) {
+      const song = getSong(songId);
+      everyDaySongNames.push(`${song.artist} - ${song.title}`);
+    }
+  }
+
+  if (everyDaySongNames.length === 0) return null;
+
+  everyDaySongNames.sort();
+
+  return {
+    label: "Every day songs",
+    value: everyDaySongNames.join(", "),
+  };
+}
+
+export function getTopGenres(userId) {
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  const countsByGenre = countByKey(
+    events,
+    (event) => getSong(event.song_id).genre,
+  );
+
+  const topGenres = Object.entries(countsByGenre)
+    .sort((a, b) => {
+      const countDiff = b[1] - a[1];
+      if (countDiff !== 0) return countDiff;
+      return a[0].localeCompare(b[0]);
+    })
+    .slice(0, 3)
+    .map(([genre]) => genre);
+
+  const n = topGenres.length;
+  if (n === 0) return null;
+
+  let label;
+
+  if (n === 1) {
+    label = "Top genre";
+  } else {
+    label = `Top ${n} genres`;
+  }
+
+  return {
+    label,
+    value: topGenres.join(", "),
+  };
+}

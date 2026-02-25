@@ -142,7 +142,39 @@ export function getFridayNightSongByTime(userId) {
 }
 
 export function getLongestStreak(userId) {
-  return null;
+  const events = getListenEvents(userId);
+  if (events.length === 0) return null;
+
+  let currentSongId = events[0].song_id;
+  let currentStreak = 1;
+
+  let bestSongId = currentSongId;
+  let bestStreak = 1;
+
+  for (let i = 1; i < events.length; i++) {
+    const songId = events[i].song_id;
+
+    if (songId === currentSongId) {
+      currentStreak++;
+    } else {
+      currentSongId = songId;
+      currentStreak = 1;
+    }
+
+    if (currentStreak > bestStreak) {
+      bestStreak = currentStreak;
+      bestSongId = currentSongId;
+    } else if (currentStreak === bestStreak && currentSongId < bestSongId) {
+      bestSongId = currentSongId;
+    }
+  }
+
+  const song = getSong(bestSongId);
+
+  return {
+    label: "Longest streak song",
+    value: `${song.artist} - ${song.title} (length: ${bestStreak})`,
+  };
 }
 
 export function getEveryDaySongs(userId) {

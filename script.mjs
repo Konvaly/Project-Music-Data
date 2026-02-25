@@ -14,6 +14,7 @@ import {
   getFridayNightSongByCount,
   getFridayNightSongByTime,
   getLongestStreak,
+  getEveryDaySongs,
 } from "./analytics.mjs";
 
 function renderAnswerSection(resultsEl, label, value) {
@@ -113,6 +114,11 @@ window.onload = function () {
     const longestStreak = getLongestStreak(userId);
     if (longestStreak !== null) {
       renderAnswerSection(resultsEl, longestStreak.label, longestStreak.value);
+    }
+
+    const everyDaySongs = getEveryDaySongs(userId);
+    if (everyDaySongs !== null) {
+      renderAnswerSection(resultsEl, everyDaySongs.label, everyDaySongs.value);
     }
   });
 

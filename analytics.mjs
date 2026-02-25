@@ -123,7 +123,9 @@ export function getFridayNightSongByTime(userId) {
 
   if (events.length === 0) return null;
 
-  const fridayNightEvents = events.filter((event) => event.timestamp);
+  const fridayNightEvents = events.filter((event) =>
+    isFridayNight(event.timestamp),
+  );
 
   if (fridayNightEvents.length === 0) return null;
 

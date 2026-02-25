@@ -5,7 +5,7 @@
 // You can't open the index.html file using a file:// URL.
 
 import { countUsers } from "./common.mjs";
-import { getUserIDs } from "./data.mjs";
+import { getUserIDs, getListenEvents } from "./data.mjs";
 import {
   getMostListenedSongByCount,
   getMostListenedSongByTime,
@@ -51,8 +51,16 @@ window.onload = function () {
 
     resultsEl.innerHTML = "";
     const userId = userSelectEl.value;
+
     if (userId === "") {
       statusEl.textContent = "Choose a user";
+      return;
+    }
+
+    const events = getListenEvents(userId);
+    if (events.length === 0) {
+      statusEl.textContent =
+        "Looks like this user hasn't listened to any music yet";
       return;
     }
 

@@ -13,6 +13,7 @@ import {
   getMostListenedArtistByTime,
   getFridayNightSongByCount,
   getFridayNightSongByTime,
+  getLongestStreak,
 } from "./analytics.mjs";
 
 function renderAnswerSection(resultsEl, label, value) {
@@ -107,6 +108,11 @@ window.onload = function () {
         fridayNightSongByTime.label,
         fridayNightSongByTime.value,
       );
+    }
+
+    const longestStreak = getLongestStreak(userId);
+    if (longestStreak !== null) {
+      renderAnswerSection(resultsEl, longestStreak.label, longestStreak.value);
     }
   });
 

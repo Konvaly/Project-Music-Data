@@ -1,21 +1,12 @@
 import { getSong, getListenEvents } from "./data.mjs";
+import { countByKey } from "./utils.mjs";
 
 export function getMostListenedSongByCount(userId) {
   const events = getListenEvents(userId);
 
   if (events.length === 0) return null;
 
-  const counts = {};
-
-  for (const event of events) {
-    const songId = event.song_id;
-
-    if (!counts[songId]) {
-      counts[songId] = 0;
-    }
-
-    counts[songId]++;
-  }
+  const counts = countByKey(events, (event) => event.song_id);
 
   let maxSongId = null;
   let maxCount = 0;

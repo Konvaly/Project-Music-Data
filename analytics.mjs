@@ -118,7 +118,27 @@ export function getFridayNightSongByCount(userId) {
 }
 
 export function getFridayNightSongByTime(userId) {
-  return null;
+  const events = getListenEvents(userId);
+
+  if (events.length === 0) return null;
+
+  const fridayNightEvents = events.filter((event) => event.timestamp);
+
+  if (fridayNightEvents.length === 0) return null;
+
+  const totalsBySong = sumByKey(
+    fridayNightEvents,
+    (event) => event.song_id,
+    (event) => getSong(event.song_id).duration_seconds,
+  );
+
+  const topSongId = maxKeyByNumber(totalsBySong);
+  const song = getSong(topSongId);
+
+  return {
+    label: "Friday night song (time)",
+    value: `${song.artist} - ${song.title}`,
+  };
 }
 
 export function getLongestStreak(userId) {

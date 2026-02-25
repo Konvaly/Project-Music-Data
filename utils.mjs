@@ -50,3 +50,11 @@ export function maxKeyByNumber(map) {
 
   return bestKey;
 }
+
+export function isFridayNight(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDay();
+  const hour = date.getHours();
+
+  return (day === 5 && hour >= 17) || (day === 6 && hour < 4);
+}

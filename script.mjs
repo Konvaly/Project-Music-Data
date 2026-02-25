@@ -15,6 +15,7 @@ import {
   getFridayNightSongByTime,
   getLongestStreak,
   getEveryDaySongs,
+  getTopGenres,
 } from "./analytics.mjs";
 
 function renderAnswerSection(resultsEl, label, value) {
@@ -119,6 +120,11 @@ window.onload = function () {
     const everyDaySongs = getEveryDaySongs(userId);
     if (everyDaySongs !== null) {
       renderAnswerSection(resultsEl, everyDaySongs.label, everyDaySongs.value);
+    }
+
+    const topGenres = getTopGenres(userId);
+    if (topGenres !== null) {
+      renderAnswerSection(resultsEl, topGenres.label, topGenres.value);
     }
   });
 

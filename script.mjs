@@ -11,6 +11,7 @@ import {
   getMostListenedSongByTime,
   getMostListenedArtistByCount,
   getMostListenedArtistByTime,
+  getFridayNightSongByCount,
 } from "./analytics.mjs";
 
 function renderAnswerSection(resultsEl, label, value) {
@@ -86,6 +87,15 @@ window.onload = function () {
         resultsEl,
         mostListenedArtistByTime.label,
         mostListenedArtistByTime.value,
+      );
+    }
+
+    const fridayNightSongByCount = getFridayNightSongByCount(userId);
+    if (fridayNightSongByCount !== null) {
+      renderAnswerSection(
+        resultsEl,
+        fridayNightSongByCount.label,
+        fridayNightSongByCount.value,
       );
     }
   });

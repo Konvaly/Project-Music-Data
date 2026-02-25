@@ -10,6 +10,7 @@ import {
   getMostListenedSongByCount,
   getMostListenedSongByTime,
   getMostListenedArtistByCount,
+  getMostListenedArtistByTime,
 } from "./analytics.mjs";
 
 function renderAnswerSection(resultsEl, label, value) {
@@ -76,6 +77,15 @@ window.onload = function () {
         resultsEl,
         mostListenedArtistByCount.label,
         mostListenedArtistByCount.value,
+      );
+    }
+
+    const mostListenedArtistByTime = getMostListenedArtistByTime(userId);
+    if (mostListenedArtistByTime !== null) {
+      renderAnswerSection(
+        resultsEl,
+        mostListenedArtistByTime.label,
+        mostListenedArtistByTime.value,
       );
     }
   });

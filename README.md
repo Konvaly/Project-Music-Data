@@ -1,81 +1,117 @@
-# Music data project
+# Project: Music Data
 
-A common task in software is to take some data, process it in some way, and present it usefully to someone.
+A small **HTML + JavaScript** app that processes supplied music listening data and presents answers to the rubric questions for a selected user.
 
-We have supplied a collection of data for you to analyse. Your task is to write code which processes this data and shows useful conclusions to a user.
+This project prioritizes **data processing correctness** and **accessibility**, not UI styling.
 
-Make a small HTML + JavaScript frontend which displays the answers to several questions, which are listed below.
+---
 
-Some principles to remember throughout this project:
+## Live site
 
-1. This is a project about data processing, not UI. You should make a simple frontend to show the data in valid semantic HTML. No credit will be given for making prettier or more complicated frontend. You are allowed to use CSS, but you are strongly advised to focus on the logic, and only add styling when you are finished. You will not get any credit for styling.
-2. You should assume the data will change in the future, but will have the same schema. So you shouldn't pre-compute anything. Your code should always read the data and calculate results from scratch.
+- Deployed URL: **https://cyf-project-music-data.netlify.app/**
 
-We have provided a `data.js` file, which contains three functions to provide data for you to analyse. `data.js` is a file containing four functions:
+> The deployed site must update automatically when changes are merged to `main` (per project requirements).
 
-1. `getUserIDs()`: when called, returns an array of strings, each of which is a user ID.
-1. `getListenEvents(userID)`: when called, returns an array of objects, each of which contains information about a single time that the given user listened to a song. The listen events are sorted by when they happened, oldest to newest. The timestamps should be interpreted as in the user's current local time zone.
-1. `getSong(songID)`: when called with one string as an argument, returns an an object containing information about a single song.
+---
 
-## Requirements
+## What the app does
 
-This is an individual project. You are expected to work on it on your own. You can talk to other trainees and volunteers and get help and advice, but you should write all of the code yourself.
+1. Shows a **drop-down with 4 users** (from `getUserIDs()`).
+2. When you select a user, it computes answers **from scratch** using the supplied data functions:
+   - Most listened song (by listens)
+   - Most listened song (by listening time)
+   - Most listened artist (by listens)
+   - Most listened artist (by listening time)
+   - Friday-night song (by listens) _(Fri 17:00 → Sat 03:59)_
+   - Friday-night song (by listening time) _(Fri 17:00 → Sat 03:59)_
+   - Longest streak song (most consecutive listens)
+   - Every-day songs (songs listened to on every day the user listened)
+   - Top genres (up to 3, label adapts to actual count)
 
-You must submit both a link to your GitHub repo, and a link to the deployed website.
+### Rubric behavior (important)
 
-Your website must be hosted on the internet, and must be automatically deployed when you merge changes to your GitHub repo.
+- If a question **does not apply**, it is **not rendered at all** (no empty sections).
+- **User 4** has no listening data → the app shows an intelligible message (e.g. “This user didn’t listen to any songs.”).
+- Views should score **100% Accessibility** in Lighthouse Snapshot.
 
-Your website must include a drop-down to select a user to display information for. When a user is selected, you must display answers to all of the questions for that user. If a question doesn't apply to that user, you should not show the question.
+---
 
-You **must not** implement any kind of authentication. Just a drop-down to choose which user's information to display.
+## Tech notes
 
-Your GitHub repository must contain at least one unit test which demonstrates that your code works. End to end tests are optional. Testing via the DOM is optional.
+- Uses **ES modules** (`.mjs`) in the browser.
+- Pure data logic lives in `analytics.mjs` + `utils.mjs`.
+- UI logic lives in `script.mjs`.
 
-Every view of your website must be accessible. We will test this by making sure that "Snapshot" mode of Lighthouse gives 100% accessibility for any view we look at.
+### Integration contract (how UI + analytics work together)
 
-## Questions to answer
+Analytics functions return either:
 
-1. What was the user's most often listened to song according to the data?
-2. What was the user's most often listened to artist according to the data?
-3. What was the user's most often listened to song on Friday nights (between 5pm and 4am)?
-4. What are the answers to the above questions if using _listening time_ rather than _number of listens_?
-5. What song did the user listen to the most times in a row (i.e. without any other song being listened to in between)? How many times was it listened to?
-6. Are there any songs that, on each day the user listened to music, they listened to every day? If the answer is yes, you should show which one(s). If the answer is no, you should not show anything about this question.
-7. What were the user's top three genres to listen to by number of listens?
+- `{ label, value }` when the answer applies, or
+- `null` when it does not apply (UI must hide the section)
 
-## Supplied scaffolding
+---
 
-In addition to `data.js`, we have supplied a few sample files in the repo to demonstrate how you can define functions in one file and use them from another file. Feel free to use these files in your solution if you want, or to just use them for inspiration for your own solution.
+## Run locally
 
-Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server - you can't open the `index.html` file using a `file://` URL.
+Because this uses ES modules in the browser, you must serve the folder over HTTP (opening `index.html` with `file://` will not work).
 
-## Rubric
+1. Install dependencies:
 
-All of the below requirements must be met for the project to be considered complete:
+```bash
+npm install
 
-- The website must contain a drop-down which lists four users.
-- Selecting a user must display answers relevant to that user (see table below).
-- The code written to calculate the answers to the questions must seem like it could handle different data if it were supplied, including the following edge-cases:
-  - User 4 has no data, so no questions apply to the user. Some intelligible statement should be shown to the user (e.g. "This user didn't listen to any songs.").
-  - If a question doesn't apply (e.g. if no songs were ever listened to on a Friday night), the interface should completely hide the question and answer. Displaying the question and an empty result, or any kind of error, is not acceptable.
-  - If fewer than three (but more than zero) genres were listened to the site should list the top genres listened to. It must not display text like "Top 3 genres", but may say "Top genres" or "Top 2 genres" or similar.
-- Unit tests must be written for at least one non-trivial function.
-- The website must score 100 for accessibility in Lighthouse
+```
 
-Bonus points (which don't mean anything):
+2. Start a local server:
 
-- Re-using code between the "most often" questions (i.e. questions 1, 2, 3, 4).
-- End-to-end tests.
+```bash
+npx http-server
 
-Expected output data:
-| Question | User 1 | User 2 | User 3 |
-| ---------------------------- | ------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Most listened song (count) | The Swell Season - When Your Mind's Made Up | Frank Turner - I Still Believe | Frank Turner - Be More Kind |
-| Most listened song (time) | Faithless - Insomnia | Frank Turner - I Still Believe | Faithless - Insomnia |
-| Most listened artist (count) | Frank Turner | Frank Turner | Frank Turner |
-| Most listened artist (time) | Frank Turner | Frank Turner | Frank Turner |
-| Friday night song (count) | The Swell Season - When Your Mind's Made Up | Frank Turner - I Still Believe | <no Friday listens - must not be displayed> |
-| Friday night song (time) | The Swell Season - When Your Mind's Made Up | Frank Turner - Photosynthesis | <no Friday listens - must not be displayed> |
-| Longest streak song | The King Blues - I Got Love (length: 34) | Frank Turner - I Still Believe (length: 44) | Two values with length 42 (can show either or both): The Divine Comedy - Tonight We Fly, Frank Turner - Be More Kind |
-| Every day songs | The Swell Season - When Your Mind's Made Up | Frank Turner - Photosynthesis, The Divine Comedy - Tonight We Fly | <no songs listened to every day - must not be displayed> |
-| Top three genres | Pop, Folk, Punk | Pop (Must not say 'top 3 genres' as there are not 3) | Pop, Folk, House |
+```
+
+3. Open the URL shown in the terminal (for example http://127.0.0.1:8080).
+
+## Testing
+
+- Rubric verification steps are documented in `TESTING.md`.
+- Unit tests are in `analytics.test.mjs` and cover non-trivial logic (edge cases and rubric traps).
+
+Run tests
+
+```bash
+npm test
+
+```
+
+---
+
+## Accessibility
+
+- Semantic headings and labelled form controls
+- Results update in a live region
+- Lighthouse Snapshot accessibility score target: **100%**
+
+---
+
+## Workflow
+
+- Feature branches with pull requests
+- Pure logic separated into `utils.mjs` and `analytics.mjs`
+- UI wiring in `script.mjs`
+- Automatic deployment on merge to `main`
+
+---
+
+## Status
+
+Project completed according to rubric requirements, including:
+
+- Correct per-user analytics answers
+- Hidden non-applicable questions
+- Non-trivial unit tests
+- Lighthouse Snapshot accessibility compliance
+- Deployed public website
+
+## Author
+
+[Mariia Serhiienko](https://github.com/Konvaly)

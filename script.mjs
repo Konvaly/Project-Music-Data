@@ -59,8 +59,7 @@ window.onload = function () {
 
     const events = getListenEvents(userId);
     if (events.length === 0) {
-      statusEl.textContent =
-        "Looks like this user hasn't listened to any music yet";
+      statusEl.textContent = "This user didn't listen to any songs.";
       return;
     }
 

@@ -127,6 +127,4 @@ window.onload = function () {
       renderAnswerSection(resultsEl, topGenres.label, topGenres.value);
     }
   });
-
-  statusEl.textContent = `There are ${countUsers()} users`;
 };

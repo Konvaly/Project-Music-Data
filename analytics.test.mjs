@@ -31,11 +31,11 @@ test("maxKeyByNumber breaks ties alphabetically", () => {
   assert.equal(maxKeyByNumber(map), "a");
 });
 
-test("getTopGenres uses dynamic label when fewer than 3 genres exist (User 2)", () => {
+test("getTopGenres uses dynamic label when fewer than 3 genres exist (User 2), must not say “Top 3 genres”", () => {
   const result = getTopGenres("2");
 
   assert.ok(result !== null);
-  assert.equal(result.label, "Top genre"); // must not say “Top 3 genres”
+  assert.equal(result.label, "Top genre");
   assert.equal(result.value, "Pop");
 });
 

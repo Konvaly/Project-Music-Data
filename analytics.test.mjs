@@ -6,6 +6,10 @@ import {
   getEveryDaySongs,
   getFridayNightSongByCount,
   getFridayNightSongByTime,
+  getMostListenedSongByCount,
+  getMostListenedSongByTime,
+  getMostListenedArtistByCount,
+  getMostListenedArtistByTime,
 } from "./analytics.mjs";
 import { maxKeyByNumber } from "./utils.mjs";
 
@@ -53,4 +57,18 @@ test("getEveryDaySongs returns sorted list for User 2", () => {
 test("Friday night results are null when user has no Friday-night listens (User 3)", () => {
   assert.equal(getFridayNightSongByCount("3"), null);
   assert.equal(getFridayNightSongByTime("3"), null);
+});
+
+test("User 4 has no data: all analytics return null (so UI can hide all questions)", () => {
+  const userId = "4";
+
+  assert.equal(getMostListenedSongByCount(userId), null);
+  assert.equal(getMostListenedSongByTime(userId), null);
+  assert.equal(getMostListenedArtistByCount(userId), null);
+  assert.equal(getMostListenedArtistByTime(userId), null);
+  assert.equal(getFridayNightSongByCount(userId), null);
+  assert.equal(getFridayNightSongByTime(userId), null);
+  assert.equal(getLongestStreak(userId), null);
+  assert.equal(getEveryDaySongs(userId), null);
+  assert.equal(getTopGenres(userId), null);
 });
